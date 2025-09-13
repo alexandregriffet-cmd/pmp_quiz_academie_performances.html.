@@ -7,7 +7,7 @@
 <style>
 :root{--brand:#0E1116;--accent:#2B79C2;--bg:#F6F7FB;--surface:#fff;--muted:#6B7280;--radius:16px;--max:980px}
 *{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;background:var(--bg);color:#0E1116}
-header{background:linear-gradient(180deg,#0E1116,#1B2230);color:#fff;padding:20px 16px}
+header{background:linear-gradient(180deg,#0E1116,#1B2230);color:#fff;padding:14px 16px}
 .wrap{max-width:var(--max);margin:0 auto}
 .hero{display:flex;flex-direction:column;gap:14px;align-items:center;text-align:center;padding:18px 0}
 .hero img{width:100%;max-width:960px;border-radius:12px;display:block}
@@ -16,22 +16,25 @@ main{max-width:var(--max);margin:24px auto;padding:0 16px 48px}
 .card{background:var(--surface);border-radius:var(--radius);box-shadow:0 8px 28px rgba(0,0,0,.08);padding:22px}
 .cta{display:flex;justify-content:center;margin-top:18px}
 .btn{display:inline-flex;gap:.5rem;align-items:center;background:var(--brand);color:#fff;border:0;border-radius:12px;padding:14px 18px;font-weight:700;text-decoration:none}
-.btn:hover{opacity:.9}
+.btn:hover{opacity:.92}
 footer{text-align:center;color:var(--muted);padding:18px}
 </style>
 </head>
 <body>
 <header><div class="wrap">
+  <img src="assets/banner.jpg" alt="Académie de Performances – bannière" style="width:100%;max-width:960px;border-radius:12px;display:block;margin:8px auto">
   <h1>Profil Mental de Performance (PMP)</h1>
   <p>Académie de Performances – Alexandre Griffet</p>
 </div></header>
-<div class="wrap"><section class="hero">
-  <img src="assets/brand.jpg" alt="Académie de Performances – visuel">
-</section></div>
-<main class="wrap"><section class="card">
-  <h2>Questionnaire pédagogique</h2>
-  <p>Découvrez votre code PMP (NRJ • Vision • Décision • Organisation) et accédez à une synthèse détaillée immédiatement : description narrative (~2 pages), forces, points de vigilance, axes de progression et encadré pratique.</p>
-  <div class="cta"><a class="btn" href="quiz.html">👉 Commencer le questionnaire</a></div>
-</section></main>
+
+<main class="wrap">
+  <section class="card">
+    <h2>Questionnaire pédagogique</h2>
+    <p>Découvrez votre code PMP (NRJ • Vision • Décision • Organisation) et accédez à votre rapport détaillé immédiatement&nbsp;: description (~2 pages), forces, vigilance, axes de progression et encadré pratique.</p>
+    <div class="cta"><a class="btn" href="quiz.html">👉 Commencer le questionnaire</a></div>
+  </section>
+</main>
+
 <footer>© Académie de Performances – Outil pédagogique</footer>
-</body></html>
+</body>
+</html>
