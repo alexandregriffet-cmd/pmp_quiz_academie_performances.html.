@@ -1,9 +1,9 @@
-# PMP V5.3 (correctif)
-- Chemins d’images normalisés : `assets/banner.jpg`, `assets/banner_results.jpg`
-- Questionnaire séquentiel, une question à la fois, pas de retour arrière
-- Mélange global des questions; section communication retirée
-- Redirection robuste vers `profils/CODE.html` (fallback index)
+# PMP V5.3b (JS externalisé)
+- Quiz : `pmp_quiz_academie_performances.html`
+- Script séparé : `script.js` (chargé en `defer` pour fiabilité GitHub Pages)
+- Chemins d’images : `assets/banner.jpg` et `assets/banner_results.jpg`
+- 16 pages de profils dans `profils/`
 ## Déploiement
-1. Décompressez ce zip et uploadez tous les fichiers à la racine de votre dépôt GitHub Pages.
-2. `Settings > Pages` : Source = `main` / `root` (ou `docs/` si vous préférez, mais gardez les chemins).
-3. Test : `/index.html` et `/quiz.html`.
+1) Décompressez et uploadez tout à la racine du dépôt.
+2) Settings > Pages : Source = main / root.
+3) Accès direct au quiz : /pmp_quiz_academie_performances.html
