@@ -1,6 +1,5 @@
 
-console.log("[PMP] script.js charge (V5.3d)");
-// Questions (strings escaped)
+console.log("[PMP] script.js charge (V5.5)");
 const AXES = {
   "NRJ": ["Je recharge mon energie plutot en etant seul qu'avec un groupe.",
 "Je prefere des conversations en tete-a-tete plutot que de grands debats.",
@@ -63,7 +62,6 @@ const AXES = {
 "Je n'aime pas laisser trainer les decisions.",
 "Je prefere des routines stables."]
 };
-
 let QUESTIONS = [];
 Object.entries(AXES).forEach(([axis, arr]) => {
   arr.forEach((q, i) => QUESTIONS.push({axis, q, id: axis + "_" + (i+1)}));
@@ -72,10 +70,8 @@ for (let i = QUESTIONS.length - 1; i > 0; i--) {
   const j = Math.floor(Math.random() * (i + 1));
   [QUESTIONS[i], QUESTIONS[j]] = [QUESTIONS[j], QUESTIONS[i]];
 }
-
 let idx = 0;
 const answers = {};
-
 function render(){
   const total = QUESTIONS.length;
   const screen = document.getElementById('screen');
@@ -83,13 +79,11 @@ function render(){
   if(!screen) return;
   if(bar) bar.style.width = (idx*100/total)+'%';
   screen.innerHTML='';
-
   if(idx >= total){
     const scores = {NRJ:{pos:0,neg:0}, Vision:{pos:0,neg:0}, "Décision":{pos:0,neg:0}, Organisation:{pos:0,neg:0}};
     QUESTIONS.forEach(it => {
       const v = answers[it.id]; if(v==null) return;
-      const s = v-3;
-      if(s>0) scores[it.axis].pos += s; else if(s<0) scores[it.axis].neg += -s;
+      const s = v-3; if(s>0) scores[it.axis].pos += s; else if(s<0) scores[it.axis].neg += -s;
     });
     const code = [
       scores.NRJ.pos >= scores.NRJ.neg ? 'I':'E',
@@ -97,28 +91,24 @@ function render(){
       scores["Décision"].pos >= scores["Décision"].neg ? 'L':'V',
       scores.Organisation.pos >= scores.Organisation.neg ? 'P':'F'
     ].join('');
-    screen.innerHTML = `<h2>Resultat</h2><p>Votre code PMP : <strong>${code}</strong>. Redirection...</p>`;
+    screen.innerHTML = `<h2>Résultat</h2><p>Votre code PMP : <strong>${code}</strong>. Redirection vers votre rapport détaillé…</p>`;
     const known = ["ICLP","ICLF","ICVP","ICVF","IGLP","IGLF","IGVP","IGVF","ECLP","ECLF","ECVP","ECVF","EGLP","EGLF","EGVP","EGVF"];
     const target = known.includes(code) ? `profils/${code}.html` : "index.html";
     setTimeout(()=>{ window.location.href = target; }, 900);
     return;
   }
-
   const it = QUESTIONS[idx];
   const q = document.createElement('div'); q.className='q'; q.textContent = it.q; screen.appendChild(q);
   const scale = document.createElement('div'); scale.className='scale';
   for(let v=1; v<=5; v++){ const lab=document.createElement('label'); const inp=document.createElement('input');
     inp.type='radio'; inp.name='ans'; inp.value=v; lab.appendChild(inp); lab.appendChild(document.createTextNode(' '+v)); scale.appendChild(lab); }
   screen.appendChild(scale);
-
   const btns = document.createElement('div'); btns.className='btns';
-  const next=document.createElement('button'); next.className='btn'; next.textContent=(idx===total-1)?'Voir mon resultat':'Question suivante'; next.disabled=true; btns.appendChild(next);
+  const next=document.createElement('button'); next.className='btn'; next.textContent=(idx===total-1)?'Voir mon résultat':'Question suivante'; next.disabled=true; btns.appendChild(next);
   const reset=document.createElement('button'); reset.className='btn secondary'; reset.textContent='Recommencer'; btns.appendChild(reset);
   screen.appendChild(btns);
-
   scale.addEventListener('change', e=>{ if(e.target && e.target.name==='ans'){ answers[it.id]=parseInt(e.target.value,10); next.disabled=false; } });
   next.addEventListener('click', ()=>{ idx++; render(); });
   reset.addEventListener('click', ()=>{ if(confirm('Recommencer le questionnaire ?')) location.reload(); });
 }
-
 document.addEventListener('DOMContentLoaded', render);
