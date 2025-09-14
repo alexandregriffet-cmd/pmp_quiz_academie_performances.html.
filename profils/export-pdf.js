@@ -2,8 +2,8 @@
 // -*- coding: utf-8 -*-
 (function(){
   function isProfilePage(){
-    var path=(location.pathname||"").toLowerCase();
-    return path.indexOf("/profils/")!==-1||!!document.querySelector('meta[name="pmp-profile"][content="true"]');
+    var p=(location.pathname||"").toLowerCase();
+    return p.indexOf("/profils/")!==-1 || !!document.querySelector('meta[name="pmp-profile"][content="true"]');
   }
   function getCode(){
     try{
@@ -15,21 +15,20 @@
     return m?m[0]:"PMP";
   }
   function ensureStyle(){
-    var css=[
-      ".pmp-export-btn{position:fixed;right:16px;top:16px;z-index:9999;",
-      "border:1px solid #2e3748;background:#0b1220;color:#e5e7eb;",
-      "padding:10px 14px;border-radius:10px;cursor:pointer}",
-      "@media print{.pmp-export-btn{display:none!important}}",
-      ".pmp-print body{background:#ffffff!important}"
-    ].join("");
-    var s=document.createElement('style');s.textContent=css;document.head.appendChild(s);
+    var css = `
+      .pmp-export-btn{position:fixed;right:16px;top:16px;z-index:9999;border:1px solid #2e3748;background:#0b1220;color:#e5e7eb;padding:10px 14px;border-radius:10px;cursor:pointer}
+      @media print{.pmp-export-btn{display:none!important}}
+      /* Hints for better page breaks */
+      #report h2, #report h3, #report .section, #report p { break-inside: avoid; page-break-inside: avoid; }
+    `;
+    var s=document.createElement('style'); s.textContent=css; document.head.appendChild(s);
   }
   function pick(sel){var el=document.querySelector(sel);return el?(el.value||el.textContent||"").trim():"";}
+
   function addPrintMode(){
     var css=`
-      body.pmp-print, body.pmp-print *{background:#fff !important; box-shadow:none !important; filter:none !important;}
-      body.pmp-print [style*="position: sticky"], body.pmp-print .sticky{position:static !important; top:auto !important;}
-      body.pmp-print .shadow, body.pmp-print [class*="shadow"]{box-shadow:none !important;}
+      body.pmp-print, body.pmp-print *{background:#ffffff !important; box-shadow:none !important;}
+      body.pmp-print .sticky{position:static !important; top:auto !important;}
       body.pmp-print .no-print{display:none !important;}
       body.pmp-print img{max-width:100% !important;}
     `;
@@ -40,18 +39,49 @@
     var s=document.getElementById('pmp-print-style'); if (s) s.remove();
     document.body.classList.remove('pmp-print');
   }
-  async function elementCanvas(el){ return await html2canvas(el,{scale:2,useCORS:true,windowWidth:document.documentElement.scrollWidth,scrollY:0}); }
-  async function getLogoDataURL(){
-    var el=document.querySelector('img[src*="logo"], img[src*="bandeau"], img[src*="header"], img[src*="assets"]');
-    if (!el) return null;
-    try{ const c=await elementCanvas(el); return c.toDataURL('image/jpeg','1.0'); }catch(e){ return null; }
+
+  function waitImages(el){
+    const imgs=Array.from(el.querySelectorAll('img'));
+    return Promise.all(imgs.map(img=>{
+      if (img.complete) return Promise.resolve();
+      return new Promise(res=>{ img.onload=img.onerror=()=>res(); });
+    }));
   }
+
+  function cloneForRender(el){
+    // Render in a fixed-width hidden container to stabilize pagination (A4 ~ 794px @96dpi)
+    const wrap=document.createElement('div');
+    wrap.style.position='fixed'; wrap.style.left='-99999px'; wrap.style.top='0'; wrap.style.width='794px';
+    wrap.style.background='#fff'; wrap.style.padding='0 16px 32px 16px';
+    wrap.appendChild(el.cloneNode(true));
+    document.body.appendChild(wrap);
+    return wrap;
+  }
+
+  async function elementCanvas(el){
+    // Use clone to stabilize layout
+    const tmp = cloneForRender(el);
+    await waitImages(tmp);
+    // small delay for fonts/layout
+    await new Promise(r=>setTimeout(r,150));
+    const canvas = await html2canvas(tmp, {scale:2, useCORS:true, windowWidth: 900, scrollY: 0});
+    tmp.remove();
+    return canvas;
+  }
+
+  async function getLogoDataURL(){
+    const logoEl = document.querySelector('img[src*="logo"], img[src*="bandeau"], img[src*="header"], img[src*="assets"]');
+    if (!logoEl) return null;
+    try{
+      const c = await html2canvas(logoEl, {scale:2, useCORS:true});
+      return c.toDataURL('image/jpeg','1.0');
+    }catch(e){ return null; }
+  }
+
   async function capturePaged(doc, el, margins, headerImg){
     const pageW=doc.internal.pageSize.getWidth(), pageH=doc.internal.pageSize.getHeight();
-    const headerH = headerImg ? 12 : 0;
+    const headerH= headerImg ? 12 : 0;
     const imgW = pageW - (margins.left + margins.right);
-    // Render after small delay to ensure bars render
-    await new Promise(r=>setTimeout(r,150));
     const canvas = await elementCanvas(el);
     const usableH = pageH - (margins.top + margins.bottom) - headerH - 2;
     const pxPerMm = canvas.width / imgW;
@@ -61,12 +91,12 @@
     slice.width=canvas.width;
     let first=true;
     while (y<total){
-      const h=Math.min(sliceHpx,total-y);
+      const h=Math.min(sliceHpx, total - y);
       slice.height=h;
       ctx.clearRect(0,0,slice.width,slice.height);
-      ctx.drawImage(canvas,0,y,canvas.width,h,0,0,canvas.width,h);
+      ctx.drawImage(canvas, 0, y, canvas.width, h, 0, 0, canvas.width, h);
       const imgData=slice.toDataURL('image/jpeg','1.0');
-      if(!first) doc.addPage();
+      if (!first) doc.addPage();
       let yStart=margins.top;
       if (headerImg){
         const headerW=30;
@@ -74,40 +104,48 @@
         yStart += headerH + 2;
       }
       doc.addImage(imgData,'JPEG',margins.left,yStart,imgW,h/pxPerMm);
-      y += h; first=false;
+      y += h;
+      first=false;
     }
   }
+
   async function exportPdf(){
-    if (!window.jspdf||!window.html2canvas){alert("PDF engine non chargé.");return;}
+    if (!window.jspdf||!window.html2canvas){ alert("PDF engine non chargé."); return; }
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('p','mm','a4');
     const margins={left:10,right:10,top:10,bottom:10};
+
     addPrintMode();
+
     const logo=await getLogoDataURL();
     // cover
-    if(logo){ doc.addImage(logo,'JPEG',15,10,180,0); }
+    if (logo){ doc.addImage(logo,'JPEG',15,10,180,0); }
     doc.setFontSize(18); doc.text("PMP — Rapport de profil",15,70);
     doc.setFontSize(16); doc.text(getCode(),15,80);
     const participant = pick('#pid,.participant,[name="participant"]')||"anonyme";
     const ctx = pick('#context,.context,[name="context"]');
-    let date = pick('#pdate,.date,[name="date"]'); if(!date){const d=new Date(); date=d.toISOString().slice(0,10);}
+    let date = pick('#pdate,.date,[name="date"]'); if(!date){ const d=new Date(); date=d.toISOString().slice(0,10); }
     doc.setFontSize(12); doc.text("Participant : "+participant,15,92);
-    if(ctx) doc.text("Contexte : "+ctx,15,100);
+    if (ctx) doc.text("Contexte : "+ctx,15,100);
     doc.text("Date : "+date,15,108);
-    // report
+
+    // content
     const report = document.querySelector('#report, main, .report, .content, .wrap, body');
     doc.addPage();
     await capturePaged(doc, report, margins, logo);
+
     removePrintMode();
     doc.save("PMP_"+getCode()+"_"+participant+"_"+date+".pdf");
   }
+
   function mount(){
-    if(!isProfilePage()) return;
+    if (!isProfilePage()) return;
     ensureStyle();
-    const b=document.createElement('button'); b.className='pmp-export-btn'; b.textContent='Exporter PDF';
-    b.addEventListener('click', exportPdf);
-    document.body.appendChild(b);
+    const btn=document.createElement('button');
+    btn.className='pmp-export-btn'; btn.textContent='Exporter PDF';
+    btn.addEventListener('click', exportPdf);
+    document.body.appendChild(btn);
   }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', mount);
+  if (document.readyState==='loading') document.addEventListener('DOMContentLoaded', mount);
   else mount();
 })();
