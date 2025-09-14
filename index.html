@@ -1,1 +1,119 @@
-<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=PMP_profil_autonome.html">
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>PMP — Profil Mental de Performance</title>
+  <link rel="icon" href="favicon.ico">
+  <style>
+    :root{--line:#223047;--muted:#9aa3b2;--txt:#e5e7eb;--accent:#22c55e;}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:0;color:var(--txt);background:#0b1220;}
+    .wrap{max-width:980px;margin:0 auto;padding:16px;}
+    .banner{border-bottom:1px solid var(--line);margin-bottom:10px;}
+    .banner img{display:block;max-width:520px;height:auto;margin:12px auto 4px;}
+    .hero{background:#0f172a;padding:16px;border:1px solid var(--line);border-radius:12px;margin-bottom:16px;text-align:center;}
+    h1{margin:0 0 6px;font-size:28px}
+    .muted{color:var(--muted)}
+    .card{background:#111827;border:1px solid var(--line);border-radius:12px;padding:16px;margin:16px 0;}
+    .btn{border:1px solid #2e3748;background:#0b1220;color:#e5e7eb;padding:10px 14px;border-radius:10px;cursor:pointer}
+    .btn.primary{background:var(--accent);border-color:#16a34a;color:#0b1220;font-weight:700}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center}
+    .qbox{background:#0b1220;border:1px solid var(--line);border-radius:12px;padding:16px;margin:10px 0;text-align:center;}
+    .scale{display:flex;gap:12px;justify-content:center;margin-top:10px}
+    .scale label{display:inline-flex;flex-direction:column;align-items:center;gap:6px}
+    .progress{height:8px;background:#0b1220;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+    .progress .bar{height:100%;background:var(--accent);width:0%}
+    .hidden{display:none}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="banner"><img src="assets/bandeau.jpg" alt="Académie de Performances — Alexandre Griffet"></div>
+  <div class="hero">
+    <h1>Questionnaire PMP</h1>
+    <div class="muted">Une question à la fois · Pas de retour en arrière · Échelle 1–5 (1=Pas d'accord … 5=Tout à fait d'accord)</div>
+    <div class="row" style="margin-top:10px">
+      <label>Identifiant : <input id="pid" placeholder="Prénom ou code"></label>
+      <label>Contexte :
+        <select id="context">
+          <option>Entraînement</option><option>Compétition</option><option>Scolaire</option><option>Autre</option>
+        </select>
+      </label>
+      <label>Date : <input type="date" id="pdate"></label>
+      <script>document.getElementById('pdate').valueAsDate = new Date();</script>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="progress"><div class="bar" id="bar"></div></div>
+    <div id="qcontainer" class="qbox"></div>
+    <div style="text-align:center;margin-top:12px">
+      <button class="btn primary" id="nextBtn">Valider & Suivant</button>
+    </div>
+  </div>
+
+  <div class="card hidden" id="resultCard" style="text-align:center">
+    <h2>Résultat</h2>
+    <p style="font-size:22px">Votre profil : <strong id="code"></strong></p>
+    <div style="margin-top:10px">
+      <a id="linkProfil" class="btn">Voir mon rapport</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const BANK_URL = "bank_pmp_v55.json";
+let BANK=null, axes=null;
+
+async function loadBank(){ const r=await fetch(BANK_URL); BANK=await r.json(); axes=BANK.axes; }
+
+function computeCode(scores){
+  const letters=[];
+  for(let i=0;i<4;i++){ const ax=axes[i]; letters.push(scores[i]>=0?ax.right:ax.left); }
+  return letters.join("");
+}
+
+document.addEventListener('DOMContentLoaded', async ()=>{
+  await loadBank();
+  const items=BANK.items;
+  const qEl=document.getElementById('qcontainer');
+  const bar=document.getElementById('bar');
+  const nextBtn=document.getElementById('nextBtn');
+  const resultCard=document.getElementById('resultCard');
+  const codeEl=document.getElementById('code');
+  const linkProfil=document.getElementById('linkProfil');
+  let idx=0; const answers=[];
+
+  function render(){
+    const it=items[idx];
+    bar.style.width=Math.round((idx/items.length)*100)+'%';
+    qEl.innerHTML='<div style="font-size:20px;margin-bottom:8px"><strong>'+(idx+1)+'/'+items.length+'</strong></div>' +
+      '<div style="font-size:18px;margin-bottom:10px">'+it.text+'</div>' +
+      '<div class="scale">'+[1,2,3,4,5].map(v=>'<label><input type="radio" name="ans" value="'+v+'"><span>'+v+'</span></label>').join('')+'</div>';
+  }
+  render();
+
+  nextBtn.addEventListener('click', ()=>{
+    const chk=document.querySelector('input[name="ans"]:checked');
+    if(!chk){ alert('Sélectionnez 1–5.'); return; }
+    answers.push(parseInt(chk.value,10));
+    idx++;
+    if(idx<items.length){ render(); }
+    else{
+      const scores=[0,0,0,0];
+      items.forEach((it,i)=>{ const v=answers[i]-3; scores[it.axis]+= it.polarity * v; });
+      const code=computeCode(scores);
+      codeEl.textContent=code;
+      linkProfil.href='profils/'+code+'.html?pid='+encodeURIComponent(document.getElementById('pid').value||'')+
+                     '&ctx='+encodeURIComponent(document.getElementById('context').value||'')+
+                     '&date='+encodeURIComponent(document.getElementById('pdate').value||'');
+      linkProfil.target='_self';
+      resultCard.classList.remove('hidden');
+      window.scrollTo({top:resultCard.offsetTop,behavior:'smooth'});
+    }
+  });
+});
+</script>
+</body>
+</html>

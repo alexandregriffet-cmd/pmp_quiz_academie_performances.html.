@@ -1,0 +1,318 @@
+{
+  "axes": [
+    {
+      "left": "I",
+      "left_label": "Introverti",
+      "right": "E",
+      "right_label": "Extraverti"
+    },
+    {
+      "left": "C",
+      "left_label": "Concret",
+      "right": "G",
+      "right_label": "Global"
+    },
+    {
+      "left": "L",
+      "left_label": "Logique",
+      "right": "V",
+      "right_label": "Valeurs"
+    },
+    {
+      "left": "P",
+      "left_label": "Planifié",
+      "right": "F",
+      "right_label": "Flexible"
+    }
+  ],
+  "items": [
+    {
+      "id": "Q1",
+      "axis": 0,
+      "polarity": -1,
+      "text": "Je me ressource plutôt seul(e) que dans de grands groupes."
+    },
+    {
+      "id": "Q2",
+      "axis": 0,
+      "polarity": 1,
+      "text": "Je parle facilement à des inconnus et j'aime l'animation."
+    },
+    {
+      "id": "Q3",
+      "axis": 0,
+      "polarity": -1,
+      "text": "Je me ressource plutôt seul(e) que dans de grands groupes."
+    },
+    {
+      "id": "Q4",
+      "axis": 0,
+      "polarity": 1,
+      "text": "Je parle facilement à des inconnus et j'aime l'animation."
+    },
+    {
+      "id": "Q5",
+      "axis": 0,
+      "polarity": -1,
+      "text": "Je me ressource plutôt seul(e) que dans de grands groupes."
+    },
+    {
+      "id": "Q6",
+      "axis": 0,
+      "polarity": 1,
+      "text": "Je parle facilement à des inconnus et j'aime l'animation."
+    },
+    {
+      "id": "Q7",
+      "axis": 0,
+      "polarity": -1,
+      "text": "Je me ressource plutôt seul(e) que dans de grands groupes."
+    },
+    {
+      "id": "Q8",
+      "axis": 0,
+      "polarity": 1,
+      "text": "Je parle facilement à des inconnus et j'aime l'animation."
+    },
+    {
+      "id": "Q9",
+      "axis": 0,
+      "polarity": -1,
+      "text": "Je me ressource plutôt seul(e) que dans de grands groupes."
+    },
+    {
+      "id": "Q10",
+      "axis": 0,
+      "polarity": 1,
+      "text": "Je parle facilement à des inconnus et j'aime l'animation."
+    },
+    {
+      "id": "Q11",
+      "axis": 0,
+      "polarity": -1,
+      "text": "Je me ressource plutôt seul(e) que dans de grands groupes."
+    },
+    {
+      "id": "Q12",
+      "axis": 0,
+      "polarity": 1,
+      "text": "Je parle facilement à des inconnus et j'aime l'animation."
+    },
+    {
+      "id": "Q13",
+      "axis": 1,
+      "polarity": -1,
+      "text": "Je préfère les faits concrets et le terrain."
+    },
+    {
+      "id": "Q14",
+      "axis": 1,
+      "polarity": 1,
+      "text": "Je privilégie la vision d'ensemble et les perspectives."
+    },
+    {
+      "id": "Q15",
+      "axis": 1,
+      "polarity": -1,
+      "text": "Je préfère les faits concrets et le terrain."
+    },
+    {
+      "id": "Q16",
+      "axis": 1,
+      "polarity": 1,
+      "text": "Je privilégie la vision d'ensemble et les perspectives."
+    },
+    {
+      "id": "Q17",
+      "axis": 1,
+      "polarity": -1,
+      "text": "Je préfère les faits concrets et le terrain."
+    },
+    {
+      "id": "Q18",
+      "axis": 1,
+      "polarity": 1,
+      "text": "Je privilégie la vision d'ensemble et les perspectives."
+    },
+    {
+      "id": "Q19",
+      "axis": 1,
+      "polarity": -1,
+      "text": "Je préfère les faits concrets et le terrain."
+    },
+    {
+      "id": "Q20",
+      "axis": 1,
+      "polarity": 1,
+      "text": "Je privilégie la vision d'ensemble et les perspectives."
+    },
+    {
+      "id": "Q21",
+      "axis": 1,
+      "polarity": -1,
+      "text": "Je préfère les faits concrets et le terrain."
+    },
+    {
+      "id": "Q22",
+      "axis": 1,
+      "polarity": 1,
+      "text": "Je privilégie la vision d'ensemble et les perspectives."
+    },
+    {
+      "id": "Q23",
+      "axis": 1,
+      "polarity": -1,
+      "text": "Je préfère les faits concrets et le terrain."
+    },
+    {
+      "id": "Q24",
+      "axis": 1,
+      "polarity": 1,
+      "text": "Je privilégie la vision d'ensemble et les perspectives."
+    },
+    {
+      "id": "Q25",
+      "axis": 2,
+      "polarity": -1,
+      "text": "Je décide surtout avec la logique et l'analyse."
+    },
+    {
+      "id": "Q26",
+      "axis": 2,
+      "polarity": 1,
+      "text": "Je décide surtout avec les valeurs et l'impact humain."
+    },
+    {
+      "id": "Q27",
+      "axis": 2,
+      "polarity": -1,
+      "text": "Je décide surtout avec la logique et l'analyse."
+    },
+    {
+      "id": "Q28",
+      "axis": 2,
+      "polarity": 1,
+      "text": "Je décide surtout avec les valeurs et l'impact humain."
+    },
+    {
+      "id": "Q29",
+      "axis": 2,
+      "polarity": -1,
+      "text": "Je décide surtout avec la logique et l'analyse."
+    },
+    {
+      "id": "Q30",
+      "axis": 2,
+      "polarity": 1,
+      "text": "Je décide surtout avec les valeurs et l'impact humain."
+    },
+    {
+      "id": "Q31",
+      "axis": 2,
+      "polarity": -1,
+      "text": "Je décide surtout avec la logique et l'analyse."
+    },
+    {
+      "id": "Q32",
+      "axis": 2,
+      "polarity": 1,
+      "text": "Je décide surtout avec les valeurs et l'impact humain."
+    },
+    {
+      "id": "Q33",
+      "axis": 2,
+      "polarity": -1,
+      "text": "Je décide surtout avec la logique et l'analyse."
+    },
+    {
+      "id": "Q34",
+      "axis": 2,
+      "polarity": 1,
+      "text": "Je décide surtout avec les valeurs et l'impact humain."
+    },
+    {
+      "id": "Q35",
+      "axis": 2,
+      "polarity": -1,
+      "text": "Je décide surtout avec la logique et l'analyse."
+    },
+    {
+      "id": "Q36",
+      "axis": 2,
+      "polarity": 1,
+      "text": "Je décide surtout avec les valeurs et l'impact humain."
+    },
+    {
+      "id": "Q37",
+      "axis": 3,
+      "polarity": -1,
+      "text": "Je préfère planifier et respecter un cadre."
+    },
+    {
+      "id": "Q38",
+      "axis": 3,
+      "polarity": 1,
+      "text": "Je préfère m'adapter et garder des options ouvertes."
+    },
+    {
+      "id": "Q39",
+      "axis": 3,
+      "polarity": -1,
+      "text": "Je préfère planifier et respecter un cadre."
+    },
+    {
+      "id": "Q40",
+      "axis": 3,
+      "polarity": 1,
+      "text": "Je préfère m'adapter et garder des options ouvertes."
+    },
+    {
+      "id": "Q41",
+      "axis": 3,
+      "polarity": -1,
+      "text": "Je préfère planifier et respecter un cadre."
+    },
+    {
+      "id": "Q42",
+      "axis": 3,
+      "polarity": 1,
+      "text": "Je préfère m'adapter et garder des options ouvertes."
+    },
+    {
+      "id": "Q43",
+      "axis": 3,
+      "polarity": -1,
+      "text": "Je préfère planifier et respecter un cadre."
+    },
+    {
+      "id": "Q44",
+      "axis": 3,
+      "polarity": 1,
+      "text": "Je préfère m'adapter et garder des options ouvertes."
+    },
+    {
+      "id": "Q45",
+      "axis": 3,
+      "polarity": -1,
+      "text": "Je préfère planifier et respecter un cadre."
+    },
+    {
+      "id": "Q46",
+      "axis": 3,
+      "polarity": 1,
+      "text": "Je préfère m'adapter et garder des options ouvertes."
+    },
+    {
+      "id": "Q47",
+      "axis": 3,
+      "polarity": -1,
+      "text": "Je préfère planifier et respecter un cadre."
+    },
+    {
+      "id": "Q48",
+      "axis": 3,
+      "polarity": 1,
+      "text": "Je préfère m'adapter et garder des options ouvertes."
+    }
+  ]
+}

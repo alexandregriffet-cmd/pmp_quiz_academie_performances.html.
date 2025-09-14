@@ -1,2 +1,6 @@
-PMP autonome — questions intégrées (UTF-8), 1–5, export PDF intégré. Uploadez le contenu à la racine de votre dépôt.
-Fichier d'entrée : PMP_profil_autonome.html
+PMP v5.5 — 4 lettres (16 profils) — Pack propre
+1) Ouvrez index.html pour lancer le questionnaire (48 items, 12 par axe).
+2) Le code profil (ex: IGVF) est calculé puis renvoie vers profils/CODE.html.
+3) Sur la page profil : bouton Exporter en PDF (avec bandeau, identifiant, contexte, date).
+4) Pour changer les questions, modifiez bank_pmp_v55.json (axis/polarity/text). UTF-8.
+Axes: 1) I vs E, 2) C vs G, 3) L vs V, 4) P vs F.
