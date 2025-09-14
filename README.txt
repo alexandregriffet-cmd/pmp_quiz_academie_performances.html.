@@ -1,1 +1,0 @@
-PMP site v6 avec Export PDF automatique (jsPDF + html2canvas).\n
