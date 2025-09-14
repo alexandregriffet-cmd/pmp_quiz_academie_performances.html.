@@ -3,10 +3,7 @@
 (function(){
   function isProfilePage(){
     var path = (location.pathname || "").toLowerCase();
-    if (path.indexOf("/profils/") !== -1) return true;
-    var meta = document.querySelector('meta[name="pmp-profile"][content="true"]');
-    if (meta) return true;
-    return false;
+    return path.indexOf("/profils/") !== -1 || !!document.querySelector('meta[name="pmp-profile"][content="true"]');
   }
   function getProfileCode(){
     try{
@@ -31,12 +28,31 @@
     var s=document.createElement('style'); s.textContent=css; document.head.appendChild(s);
   }
   function pick(sel){ var el=document.querySelector(sel); return el ? (el.value||el.textContent||"").trim() : ""; }
-  async function captureElementToPagedPdf(doc, el, margins){
-    const canvas = await html2canvas(el, {scale:2, useCORS:true, windowWidth: document.documentElement.scrollWidth});
-    const imgWidth = doc.internal.pageSize.getWidth() - (margins.left + margins.right);
-    const pageHeight = doc.internal.pageSize.getHeight() - (margins.top + margins.bottom);
+
+  async function elementToCanvas(el){
+    return await html2canvas(el, {scale:2, useCORS:true, windowWidth: document.documentElement.scrollWidth});
+  }
+
+  async function getLogoDataURL(){
+    const logoEl = document.querySelector('img[src*="logo"], img[src*="bandeau"], img[src*="header"], img[src*="assets"]');
+    if (!logoEl) return null;
+    try{
+      const c = await elementToCanvas(logoEl);
+      return c.toDataURL('image/jpeg','1.0');
+    }catch(e){ return null; }
+  }
+
+  async function captureElementToPagedPdf(doc, el, margins, headerImgData){
+    // Render element to canvas, then slice per page. Add small logo on each page as header.
+    const canvas = await elementToCanvas(el);
+    const pageW = doc.internal.pageSize.getWidth();
+    const pageH = doc.internal.pageSize.getHeight();
+    const headerH = headerImgData ? 12 : 0; // mm height for header logo
+    const imgWidth = pageW - (margins.left + margins.right);
+    const usableH = pageH - (margins.top + margins.bottom) - headerH;
     const pxPerMm = canvas.width / imgWidth;
-    const sliceHeightPx = Math.floor(pageHeight * pxPerMm);
+    const sliceHeightPx = Math.floor(usableH * pxPerMm);
+
     let y = 0, total = canvas.height;
     const sliceCanvas = document.createElement('canvas');
     const sliceCtx = sliceCanvas.getContext('2d');
@@ -49,24 +65,31 @@
       sliceCtx.drawImage(canvas, 0, y, canvas.width, h, 0, 0, canvas.width, h);
       const imgData = sliceCanvas.toDataURL('image/jpeg','1.0');
       if (!first) doc.addPage();
-      doc.addImage(imgData, 'JPEG', margins.left, margins.top, imgWidth, h/pxPerMm);
+      // Header logo on each page (after cover)
+      let yStart = margins.top;
+      if (headerImgData){
+        // draw small header logo at right
+        const headerW = 30; // mm
+        doc.addImage(headerImgData, 'JPEG', pageW - margins.right - headerW, margins.top, headerW, headerH);
+        yStart += headerH + 2; // small gap under header
+      }
+      doc.addImage(imgData, 'JPEG', margins.left, yStart, imgWidth, h/pxPerMm);
       y += h; first = false;
     }
   }
+
   async function exportPdf(profileCode){
     if (!window.jspdf || !window.html2canvas){ alert("PDF engine non chargé."); return; }
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('p','mm','a4');
     const margins = {left:10,right:10,top:10,bottom:10};
 
-    // Cover
-    const logo = document.querySelector('img[src*="logo"], img[src*="bandeau"], img[src*="header"], img[src*="assets"]');
-    if (logo){
-      try{
-        const c = await html2canvas(logo, {scale:2, useCORS:true});
-        const img = c.toDataURL('image/jpeg','1.0');
-        doc.addImage(img,'JPEG',15,10,180,0);
-      }catch(e){}
+    // Prepare logo images
+    const logoDataURL = await getLogoDataURL();
+
+    // Cover page with big banner
+    if (logoDataURL){
+      doc.addImage(logoDataURL,'JPEG',15,10,180,0);
     }
     doc.setFontSize(18); doc.text("PMP — Rapport de profil", 15, 70);
     doc.setFontSize(16); doc.text(profileCode, 15, 80);
@@ -79,13 +102,14 @@
     if (ctx) doc.text("Contexte : " + ctx, 15, 100);
     doc.text("Date : " + date, 15, 108);
 
-    // Report (paged)
+    // Report pages with header logo
     const report = document.querySelector('#report, main, .report, .content, .wrap, body');
     doc.addPage();
-    await captureElementToPagedPdf(doc, report, margins);
+    await captureElementToPagedPdf(doc, report, margins, logoDataURL);
 
     doc.save("PMP_"+profileCode+"_"+participant+"_"+date+".pdf");
   }
+
   function addButton(profileCode){
     ensureStyle();
     const btn = document.createElement('button');
@@ -94,11 +118,13 @@
     btn.addEventListener('click', ()=>exportPdf(profileCode));
     document.body.appendChild(btn);
   }
+
   function onReady(){
-    var path = (location.pathname||'').toLowerCase();
-    if (path.indexOf('/profils/') === -1) return; // only on profile pages
+    if (!isProfilePage()) return;
     addButton(getProfileCode());
+    console.log('[PMP] export-pdf.js chargé (pagination + header logo)');
   }
+
   if (document.readyState==='loading') document.addEventListener('DOMContentLoaded', onReady);
   else onReady();
 })();

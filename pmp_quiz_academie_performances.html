@@ -38,7 +38,7 @@ input[type=radio]{accent-color:var(--brand)}
 </section>
 </main>
 <script defer="" src="script.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script><script src="export-pdf.js"></script><script>// axis-enhancer injected</script><script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script><script src="export-pdf.js"></script><script>
 // -*- coding: utf-8 -*-
 (function(){
   function attach(){
@@ -68,6 +68,10 @@ input[type=radio]{accent-color:var(--brand)}
         if (p === 50) p = (code[i]===axes[i].right) ? 51 : 49;
         return p;
       });
+      // Store in localStorage for fallback on profile pages
+      try{
+        localStorage.setItem('pmp_last_bars', JSON.stringify({code:code, a:rightPct, ts:Date.now()}));
+      }catch(e){}
       link.addEventListener('click', function(){
         var u = new URL(link.href, location.origin);
         u.searchParams.set('code', code);
