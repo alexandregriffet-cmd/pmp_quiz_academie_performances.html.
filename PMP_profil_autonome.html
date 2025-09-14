@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>PMP — Profil Mental de Performance</title>
+  <style>
+    :root{--line:#e7eaf2;--ink:#111;--muted:#5c6679;--bg:#0f172a;--card:#111827;--accent:#22c55e;}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:0;color:#fff;background:#0b1220;}
+    .wrap{max-width:980px;margin:0 auto;padding:16px;}
+    .banner{border-bottom:1px solid #223047;margin-bottom:12px;background:#0b1220;}
+    .banner img{display:block;max-width:520px; height:auto; margin:12px auto 4px; }
+    .hero{background:#0f172a;padding:16px;border:1px solid #223047;border-radius:12px;margin-bottom:16px;}
+    h1{margin:0 0 6px;font-size:28px}
+    .muted{color:#9aa3b2}
+    .card{background:#111827;border:1px solid #223047;border-radius:12px;padding:16px;margin:16px 0;}
+    .btn{border:1px solid #2e3748;background:#0b1220;color:#e5e7eb;padding:10px 14px;border-radius:10px;cursor:pointer}
+    .btn.primary{background:#22c55e;border-color:#16a34a;color:#0b1220;font-weight:700}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .qbox{background:#0b1220;border:1px solid #223047;border-radius:12px;padding:16px;margin:10px 0;}
+    .scale{display:flex;gap:12px;justify-content:center;margin-top:10px}
+    .scale label{display:inline-flex;flex-direction:column;align-items:center;gap:6px}
+    .progress{height:8px;background:#0b1220;border:1px solid #223047;border-radius:999px;overflow:hidden}
+    .progress .bar{height:100%;background:#22c55e;width:0%}
+    .center{text-align:center}
+    table{border-collapse:collapse;width:100%;font-size:14px;color:#e5e7eb}
+    th,td{border:1px solid #223047;padding:8px;text-align:center}
+    th{background:#0b1220}
+    .hidden{display:none}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="banner center">
+    <img src="assets/bandeau.jpg" alt="Académie de Performances — Alexandre Griffet">
+  </div>
+
+  <div class="hero center">
+    <h1>Questionnaire PMP</h1>
+    <div class="muted">Une question à la fois · Pas de retour en arrière · 1=Pas d'accord … 5=Tout à fait d'accord</div>
+    <div class="row" style="justify-content:center;margin-top:10px">
+      <label>Identifiant : <input id="pid" placeholder="Prénom ou code"></label>
+      <label>Contexte :
+        <select id="context">
+          <option>Entraînement</option><option>Compétition</option><option>Scolaire</option><option>Autre</option>
+        </select>
+      </label>
+      <label>Date : <input type="date" id="pdate"></label>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="progress"><div class="bar" id="bar"></div></div>
+    <div id="qcontainer" class="qbox center"></div>
+    <div class="center" style="margin-top:12px">
+      <button class="btn primary" id="nextBtn">Valider & Suivant</button>
+    </div>
+  </div>
+
+  <div class="card hidden" id="resultsCard">
+    <h2 class="center">Résultats</h2>
+    <table style="margin-top:10px">
+      <thead><tr><th>Participant</th><th>Score moyen (%)</th></tr></thead>
+      <tbody><tr><td id="pidCell">—</td><td id="avgCell">—</td></tr></tbody>
+    </table>
+    <canvas id="radar" width="700" height="460" style="margin-top:12px"></canvas>
+
+    <h3>Réponses</h3>
+    <table id="answersTable"><thead><tr><th>#</th><th>Item</th><th>Réponse (1-5)</th><th>%</th><th>Dimension</th></tr></thead><tbody id="answersBody"></tbody></table>
+
+    <div class="center" style="margin-top:14px">
+      <button class="btn" id="exportPdf">Exporter PDF</button>
+      <button class="btn" id="restart">Recommencer</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+// -*- coding: utf-8 -*-
+const ITEMS = [{"id": "Q1", "text": "Je me sens capable de réussir ce que j'entreprends.", "dim": "Estime de soi"}, {"id": "Q2", "text": "Je garde un niveau d'énergie suffisant dans la journée.", "dim": "Énergie"}, {"id": "Q3", "text": "Je gère efficacement mes émotions lors d'un enjeu important.", "dim": "Émotions"}, {"id": "Q4", "text": "Je garde confiance même après une erreur.", "dim": "Confiance"}, {"id": "Q5", "text": "Je sais pourquoi je fais les choses et ça me porte.", "dim": "Motivation"}, {"id": "Q6", "text": "Je reste concentré(e) même avec des distractions autour de moi.", "dim": "Concentration"}, {"id": "Q7", "text": "Je m'exprime clairement à l'oral.", "dim": "Communication"}, {"id": "Q8", "text": "Je me fixe des objectifs précis et mesurables.", "dim": "Objectifs"}, {"id": "Q9", "text": "J'organise mon temps et mes priorités efficacement.", "dim": "Organisation"}, {"id": "Q10", "text": "Je rebondis rapidement après un échec.", "dim": "Résilience"}, {"id": "Q11", "text": "Je sais gérer la pression et le stress.", "dim": "Stress"}, {"id": "Q12", "text": "Je planifie les étapes avant une échéance importante.", "dim": "Planification"}, {"id": "Q13", "text": "Je valorise mes réussites sans les minimiser.", "dim": "Estime de soi"}, {"id": "Q14", "text": "Je sais me dynamiser quand c'est nécessaire.", "dim": "Énergie"}, {"id": "Q15", "text": "J'identifie ce que je ressens pour mieux agir.", "dim": "Émotions"}, {"id": "Q16", "text": "Je prends des initiatives même si tout n'est pas parfait.", "dim": "Confiance"}, {"id": "Q17", "text": "Je persévère quand l'effort devient inconfortable.", "dim": "Motivation"}, {"id": "Q18", "text": "Je coupe les distractions pour rester focus.", "dim": "Concentration"}, {"id": "Q19", "text": "J'adapte mon langage corporel et ma voix à la situation.", "dim": "Communication"}, {"id": "Q20", "text": "Je découpe mes objectifs en étapes atteignables.", "dim": "Objectifs"}, {"id": "Q21", "text": "Je vérifie régulièrement l'avancement de mes actions.", "dim": "Organisation"}, {"id": "Q22", "text": "Je transforme les difficultés en apprentissages.", "dim": "Résilience"}, {"id": "Q23", "text": "Je respire/relaxe pour réguler mon stress rapidement.", "dim": "Stress"}, {"id": "Q24", "text": "Je prépare un plan avant une performance clé.", "dim": "Planification"}, {"id": "Q25", "text": "Je me sens capable de réussir ce que j'entreprends.", "dim": "Estime de soi"}, {"id": "Q26", "text": "Je garde un niveau d'énergie suffisant dans la journée.", "dim": "Énergie"}, {"id": "Q27", "text": "Je gère efficacement mes émotions lors d'un enjeu important.", "dim": "Émotions"}, {"id": "Q28", "text": "Je garde confiance même après une erreur.", "dim": "Confiance"}, {"id": "Q29", "text": "Je sais pourquoi je fais les choses et ça me porte.", "dim": "Motivation"}, {"id": "Q30", "text": "Je reste concentré(e) même avec des distractions autour de moi.", "dim": "Concentration"}, {"id": "Q31", "text": "Je m'exprime clairement à l'oral.", "dim": "Communication"}, {"id": "Q32", "text": "Je me fixe des objectifs précis et mesurables.", "dim": "Objectifs"}, {"id": "Q33", "text": "J'organise mon temps et mes priorités efficacement.", "dim": "Organisation"}, {"id": "Q34", "text": "Je rebondis rapidement après un échec.", "dim": "Résilience"}, {"id": "Q35", "text": "Je sais gérer la pression et le stress.", "dim": "Stress"}, {"id": "Q36", "text": "Je planifie les étapes avant une échéance importante.", "dim": "Planification"}, {"id": "Q37", "text": "Je valorise mes réussites sans les minimiser.", "dim": "Estime de soi"}, {"id": "Q38", "text": "Je sais me dynamiser quand c'est nécessaire.", "dim": "Énergie"}, {"id": "Q39", "text": "J'identifie ce que je ressens pour mieux agir.", "dim": "Émotions"}, {"id": "Q40", "text": "Je prends des initiatives même si tout n'est pas parfait.", "dim": "Confiance"}, {"id": "Q41", "text": "Je persévère quand l'effort devient inconfortable.", "dim": "Motivation"}, {"id": "Q42", "text": "Je coupe les distractions pour rester focus.", "dim": "Concentration"}, {"id": "Q43", "text": "J'adapte mon langage corporel et ma voix à la situation.", "dim": "Communication"}, {"id": "Q44", "text": "Je découpe mes objectifs en étapes atteignables.", "dim": "Objectifs"}, {"id": "Q45", "text": "Je vérifie régulièrement l'avancement de mes actions.", "dim": "Organisation"}, {"id": "Q46", "text": "Je transforme les difficultés en apprentissages.", "dim": "Résilience"}, {"id": "Q47", "text": "Je respire/relaxe pour réguler mon stress rapidement.", "dim": "Stress"}, {"id": "Q48", "text": "Je prépare un plan avant une performance clé.", "dim": "Planification"}];
+
+(function(){
+  const qEl = document.getElementById('qcontainer');
+  const bar = document.getElementById('bar');
+  const nextBtn = document.getElementById('nextBtn');
+  const resCard = document.getElementById('resultsCard');
+  const answersBody = document.getElementById('answersBody');
+  const answers = [];
+  let idx = 0;
+  document.getElementById('pdate').valueAsDate = new Date();
+
+  function renderQuestion(){
+    const it = ITEMS[idx];
+    bar.style.width = Math.round((idx/ITEMS.length)*100) + '%';
+    qEl.innerHTML = '<div style="font-size:20px;margin-bottom:8px"><strong>'+(idx+1)+'/'+ITEMS.length+'</strong></div>' +
+      '<div style="font-size:18px;margin-bottom:10px">'+it.text+'</div>' +
+      '<div class="scale">' +
+      [1,2,3,4,5].map(v => '<label><input type="radio" name="ans" value="'+v+'"><span>'+v+'</span></label>').join('') +
+      '</div>';
+  }
+
+  function showResults(){
+    bar.style.width = '100%';
+    document.getElementById('pidCell').textContent = document.getElementById('pid').value || '—';
+    const mean = answers.reduce((a,b)=>a+b,0)/answers.length;
+    const pct = Math.round((mean/5)*10000)/100;
+    document.getElementById('avgCell').textContent = pct.toFixed(2);
+
+    // Fill answers table
+    answersBody.innerHTML = '';
+    ITEMS.forEach((it,i)=>{
+      const v = answers[i];
+      const tr = document.createElement('tr');
+      function td(t){ const e=document.createElement('td'); e.textContent=t; return e; }
+      tr.appendChild(td(i+1));
+      tr.appendChild(td(it.text));
+      tr.appendChild(td(v));
+      tr.appendChild(td(((v/5)*100).toFixed(2)));
+      tr.appendChild(td(it.dim));
+      answersBody.appendChild(tr);
+    });
+
+    // Radar: aggregate by dim
+    const byDim = {};
+    ITEMS.forEach((it,i)=>{ (byDim[it.dim] ||= []).push(answers[i]); });
+    const labels = Object.keys(byDim);
+    const data = labels.map(d => {
+      const arr = byDim[d]; const m = arr.reduce((a,b)=>a+b,0)/arr.length;
+      return Math.round((m/5)*10000)/100;
+    });
+    if (window.__chart) window.__chart.destroy();
+    const ctx = document.getElementById('radar');
+    window.__chart = new Chart(ctx, {
+      type: 'radar',
+      data: { labels, datasets: [{ label:'Profil (%)', data, fill:true }] },
+      options: { scales: { r: { suggestedMin:0, suggestedMax:100 } }, plugins:{ legend:{display:false} } }
+    });
+
+    resCard.classList.remove('hidden');
+    window.scrollTo({top: resCard.offsetTop, behavior:'smooth'});
+  }
+
+  nextBtn.addEventListener('click', ()=>{
+    const checked = document.querySelector('input[name="ans"]:checked');
+    if (!checked){ alert('Sélectionne une réponse 1–5.'); return; }
+    answers.push(parseInt(checked.value,10));
+    idx++;
+    if (idx < ITEMS.length){
+      renderQuestion();
+    } else {
+      nextBtn.disabled = true;
+      showResults();
+    }
+  });
+
+  document.getElementById('restart').addEventListener('click', ()=>{ location.reload(); });
+
+  // PDF export
+  document.getElementById('exportPdf').addEventListener('click', async ()=>{
+    if (!answers.length){ alert('Veuillez compléter le questionnaire.'); return; }
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('p','mm','a4');
+    // Page de garde
+    const banner = document.querySelector('.banner');
+    let canvas = await html2canvas(banner, {scale:2, useCORS:true});
+    let img = canvas.toDataURL('image/jpeg','1.0');
+    doc.addImage(img,'JPEG',15,10,180,0);
+    doc.setFontSize(18); doc.text('PMP — Profil Mental de Performance', 15, 70);
+    const pid = document.getElementById('pid').value || 'anonyme';
+    const ctx = document.getElementById('context').value || '';
+    const date = document.getElementById('pdate').value || '';
+    doc.setFontSize(12);
+    doc.text('Participant : '+pid, 15, 86);
+    doc.text('Contexte : '+ctx, 15, 94);
+    doc.text('Date : '+date, 15, 102);
+
+    // Résultats
+    doc.addPage();
+    const resultsEl = document.getElementById('resultsCard');
+    canvas = await html2canvas(resultsEl, {scale:2, useCORS:true});
+    img = canvas.toDataURL('image/jpeg','1.0');
+    doc.addImage(img,'JPEG',10,10,190,0);
+
+    doc.save('PMP_profil_resultats_'+pid+'_'+date+'.pdf');
+  });
+
+  // Start
+  renderQuestion();
+})();
+</script>
+</body>
+</html>
