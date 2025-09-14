@@ -1,76 +1,41 @@
-<!doctype html>
-<html lang="fr">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>ICVP — Le protecteur du sens</title>
-  <link rel="icon" href="../favicon.ico">
-  <style>
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:0;background:#0b1220;color:#e5e7eb}
-    .wrap{max-width:900px;margin:0 auto;padding:16px}
-    .banner img{display:block;max-width:520px;height:auto;margin:12px auto 4px}
-    .card{background:#111827;border:1px solid #223047;border-radius:12px;padding:16px;margin:16px 0;}
-    .btn{border:1px solid #2e3748;background:#0b1220;color:#e5e7eb;padding:10px 14px;border-radius:10px;cursor:pointer}
-    h1{margin:0 0 8px;font-size:28px}
-    .muted{color:#9aa3b2}
-  </style>
-</head>
+<!DOCTYPE html>
+<html lang="fr"><head>
+<meta charset="utf-8"/><meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>PMP – ICVP – Le protecteur du sens</title>
+<meta content="Profil PMP ICVP – rapport narratif détaillé (≈2 pages)." name="description"/>
+<style>
+:root{--bg:#F6F7FB;--surface:#fff;--text:#0E1116;--muted:#6B7280;--brand:#0E1116;--radius:14px;--max:860px}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;line-height:1.62}
+header{background:linear-gradient(180deg,#0E1116,#1B2230);color:#fff;padding:0 0 10px}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 16px 56px}
+.hero{max-width:860px;margin:0 auto}
+.card{background:var(--surface);border-radius:var(--radius);box-shadow:0 10px 28px rgba(0,0,0,.08);padding:24px;margin-top:16px}
+.sep{border-top:1px solid #E6E8F0;margin:22px 0}
+.note{border-left:4px solid #0E1116;background:#F5F7FD;padding:12px;border-radius:10px;margin-top:14px}
+h1{margin:0.6rem 0 0.2rem} h2{margin:1.1rem 0 .3rem} .small{color:#6B7280;font-size:.92rem}
+</style></head>
 <body>
-<div class="wrap">
-  <div class="banner"><img src="../assets/bandeau.jpg" alt="Académie de Performances — Alexandre Griffet"></div>
-  <div class="card">
-    <h1>ICVP — Le protecteur du sens</h1>
-    <div class="muted">Académie de Performances — Rapport détaillé</div>
-    <div style="margin-top:8px">
-      <a class="btn" href="../index.html">↩ Reprendre le questionnaire</a>
-      <button class="btn" id="exportPdf">Exporter en PDF</button>
-    </div>
-  </div>
-  <div class="card" id="report">
-<h2>Introduction</h2>
-<p>Texte d’introduction pour ICVP — Le protecteur du sens. (Remplacez par votre contenu validé.)</p>
-<h3>Forces — Professionnel</h3>
-<p>Contenu forces pro…</p>
-<h3>Forces — Familial</h3>
-<p>Contenu forces familial…</p>
-<h3>Forces — Communication</h3>
-<p>Contenu communication…</p>
-<h3>Points de vigilance</h3>
-<p>Contenu vigilance…</p>
-<h3>Axes de progression</h3>
-<p>Contenu progression…</p>
-<h3>Illustrations inspirantes</h3>
-<p>Contenu illustrations…</p>
-<h3>🧰 3 clés de performance</h3>
-<ul><li>Clé 1…</li><li>Clé 2…</li><li>Clé 3…</li></ul>
-
-  </div>
+<header>
+<img alt="Bannière résultats" class="hero" src="../assets/banner_results.jpg" style="width:100%;border-radius:10px"/>
+<div class="wrap" style="padding-top:10px">
+<h1>ICVP — Le protecteur du sens</h1>
+<p class="small">Académie de Performances — Rapport détaillé</p>
+<a href="../pmp_quiz_academie_performances.html" style="display:inline-block;margin-top:10px;background:#0E1116;color:#fff;text-decoration:none;padding:10px 14px;border-radius:10px;font-weight:700">↩︎ Reprendre le questionnaire</a>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script>
-document.getElementById('exportPdf').addEventListener('click', async ()=>{
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF('p','mm','a4');
-  const banner = document.querySelector('.banner');
-  let canvas = await html2canvas(banner, {scale:2, useCORS:true});
-  let img = canvas.toDataURL('image/jpeg','1.0');
-  doc.addImage(img,'JPEG',15,10,180,0);
-  doc.setFontSize(18); doc.text('ICVP — Le protecteur du sens', 15, 70);
-  const params = new URLSearchParams(location.search);
-  const pid = params.get('pid') || 'anonyme';
-  const ctx = params.get('ctx') || '';
-  const date = params.get('date') || '';
-  doc.setFontSize(12);
-  doc.text('Participant : '+pid, 15, 86);
-  doc.text('Contexte : '+ctx, 15, 94);
-  doc.text('Date : '+date, 15, 102);
-  doc.addPage();
-  canvas = await html2canvas(document.getElementById('report'), {scale:2, useCORS:true});
-  img = canvas.toDataURL('image/jpeg','1.0');
-  doc.addImage(img,'JPEG',10,10,190,0);
-  doc.save('PMP_'+ 'ICVP' +'_'+pid+'_'+date+'.pdf');
-});
-</script>
-</body>
-</html>
+</header>
+<main class="wrap">
+<section class="card">
+<h2>Introduction</h2><p>Si ton profil est ICVP – Le protecteur du sens, tu avances avec une signature bien à toi. Ton énergie s’oriente vers l’intériorité, ce qui te permet de prendre du recul et de faire des choix posés. Ta vision du monde est concrète : tu accordes de la valeur à ce qui tient dans la main ou, au contraire, à ce qui ouvre des perspectives à long terme. Tes décisions sont centrée sur l’impact humain et les valeurs, et ton organisation plutôt planifiée. Au quotidien, cela se traduit par un rapport lucide aux choses : tu préfères comprendre avant d’agir, mettre à l’épreuve les idées, te donner des repères clairs. Tu inspires confiance par ta constance et ta loyauté ; on sait que tu ne lâches pas la barre au premier grain de vent. En même temps, tu peux ressentir de la tension quand le rythme s’accélère trop ou que les règles changent sans préavis. Dans ces moments, c’est ton sens du cap qui te ramène à l’essentiel : aligner les intentions, les méthodes et les résultats.</p>
+<div class="sep"></div>
+<h2>Forces — Professionnel</h2><p>Au travail, ta force se voit dans la manière dont tu transformes un objectif flou en plan atteignable. Tu clarifies les priorités, poses des jalons, vérifies l’avancement avec rigueur. On te sollicite pour sécuriser une livraison, fiabiliser un process, ou remettre à plat un projet confus. Tu sais impliquer les autres de manière mesurée, distribuer les rôles et préserver la qualité. Quand la pression monte, tu ne cherches pas la brillance mais l’efficacité : tu retires l’accessoire, tu gardes l’essentiel et tu avances, étape après étape.</p>
+<h2>Forces — Familial</h2><p>Dans la sphère familiale et personnelle, tu incarnes la stabilité qui rassure. Tu tiens tes engagements, tu respectes les rythmes et les rituels qui font du bien. On se tourne vers toi pour trancher calmement, organiser un week-end, ou simplement parce que ta présence apaise. Tu n’as pas besoin de grands discours : tu prouves par tes actes, par la constance et par les détails auxquels tu prêtes attention.</p>
+<h2>Forces — Communication</h2><p>Ta communication est claire et utile. Tu vas à l’essentiel, tu cadres les échanges, tu fais ressortir les faits saillants. Tu peux paraître direct·e, mais ton intention est de faire avancer le sujet. Tu sais reformuler pour éviter les malentendus et tu apprécies les retours précis, argumentés et constructifs.</p>
+<div class="sep"></div>
+<h2>Points de vigilance</h2><p>Ta force peut devenir un excès lorsque tu cherches à tout maîtriser. Face à l’incertitude, tu peux te crisper, ralentir l’élan collectif ou devenir trop critique vis‑à‑vis de ceux qui ne suivent pas tes standards. Selon ta préférence décisionnelle, tu peux négliger l’émotionnel au profit de la logique, ou l’inverse : sur‑investir le lien et perdre de vue l’exigence nécessaire. Si ton regard est surtout tourné vers le concret, tu peux sous‑estimer la puissance d’une vision ; s’il est très prospectif, tu peux ignorer des contraintes de terrain. Ta vigilance consiste donc à équilibrer ton talent dominant par le complément qui te manque : donner de la place à l’imprévu, à l’écoute, à l’expérimentation, ou à des critères de qualité plus stricts selon les cas.</p>
+<h2>Axes de progression</h2><p>Pour grandir sans te dénaturer, crée des espaces d’entraînement à la marge opposée de ton confort. Si tu planifies beaucoup, bloque des créneaux pour tester sans script. Si tu improvises aisément, formalise un rituel hebdomadaire d’organisation. Si ta logique prime, ajoute un point « humains/impacts » à chaque décision ; si ton empathie domine, formule des critères objectifs et mesure ta progression. Réserve un temps mensuel pour revisiter tes priorités : qu’est‑ce qui mérite d’être poursuivi, ajusté, abandonné ? Enfin, instaure un tableau de petites victoires : noter ce qui progresse nourrit ta motivation et ton sentiment d’efficacité durable.</p>
+<div class="sep"></div>
+<h2>Illustrations inspirantes</h2><p>Regarde Didier Deschamps et Mireia Belmonte : au‑delà de l’image publique, ce qui frappe, c’est la capacité à répéter l’exigence jour après jour, à affiner les détails sans perdre le cap, à s’adapter aux contextes pour rester performant·e. Tu peux t’en inspirer en traduisant cet état d’esprit dans ta réalité : préparation lucide, micro‑ajustements, confiance dans le processus.</p>
+<div class="note"><strong>🧰 3 clés de performance</strong><ol><li><strong>Crée un rituel opposé</strong> à ton réflexe habituel (planifier vs. improviser) et tiens‑le 4 semaines.</li><li><strong>Décisions 360°</strong> : ajoute systématiquement un point « données » et un point « humains » à tes arbitrages.</li><li><strong>Carnet de progrès</strong> : consigne 3 avancées par semaine et célèbre‑les avec ton équipe ou tes proches.</li></ol></div>
+</section>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script><script src="export-pdf.js"></script></body></html>
