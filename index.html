@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="fr"><head>
 <meta charset="utf-8"/><meta content="width=device-width, initial-scale=1" name="viewport"/>
 <title>Académie de Performances – PMP</title>
@@ -27,4 +28,45 @@ footer{text-align:center;color:var(--muted)}
 </section>
 </main>
 <footer class="wrap">© Académie de Performances</footer>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script><script src="export-pdf.js"></script></body></html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script><script src="export-pdf.js"></script><script>// axis-enhancer injected</script><script>
+// -*- coding: utf-8 -*-
+(function(){
+  function attach(){
+    var link = document.getElementById('linkProfil');
+    if (!link) return;
+    try{
+      var items = (window.BANK && Array.isArray(window.BANK.items)) ? window.BANK.items : null;
+      var axes = (window.BANK && window.BANK.axes) || [
+        {left:'I',right:'E'},
+        {left:'C',right:'G'},
+        {left:'L',right:'V'},
+        {left:'P',right:'F'},
+      ];
+      var answers = window.answers || window.ANSWERS || window.userAnswers || null;
+      if (!items || !answers || answers.length !== items.length) return;
+      var scores=[0,0,0,0], counts=[0,0,0,0];
+      items.forEach((it,i)=>{
+        var v = (answers[i]||3)-3;
+        scores[it.axis] += (it.polarity||1)*v;
+        counts[it.axis]++;
+      });
+      var code = scores.map((S,i)=> S>=0 ? axes[i].right : axes[i].left).join('');
+      var rightPct = scores.map((S,i)=>{
+        var n = counts[i]||1;
+        var p = ((S + 2*n) / (4*n)) * 100;
+        p = Math.max(0, Math.min(100, Math.round(p)));
+        if (p === 50) p = (code[i]===axes[i].right) ? 51 : 49;
+        return p;
+      });
+      link.addEventListener('click', function(){
+        var u = new URL(link.href, location.origin);
+        u.searchParams.set('code', code);
+        rightPct.forEach((p,i)=> u.searchParams.set('a'+i, p));
+        link.href = u.toString();
+      }, {once:true});
+    }catch(e){/* ignore */}
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', attach);
+  else attach();
+})();
+</script></body></html>
