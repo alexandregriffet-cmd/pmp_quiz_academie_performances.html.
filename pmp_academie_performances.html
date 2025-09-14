@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>PMP — Profil Mental de Performance</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .banner img { max-width: 100%; height: auto; }
+    .card { border: 1px solid #ccc; border-radius: 8px; padding: 16px; margin: 16px 0; }
+    .btn { padding: 8px 12px; border: 1px solid #333; border-radius: 6px; cursor:pointer; margin-right:8px;}
+  </style>
+</head>
+<body>
+<div class="banner"><img id="bandeau" src="assets/bandeau.jpg" alt="Logo PMP"></div>
+<h1>PMP — Profil Mental de Performance</h1>
+
+<div class="card">
+  <label>Identifiant participant : <input id="pid"></label>
+  <label> Contexte :
+    <select id="context">
+      <option>Entraînement</option><option>Compétition</option><option>Scolaire</option>
+    </select>
+  </label>
+  <label>Date : <input type="date" id="pdate"></label>
+  <script>document.getElementById('pdate').valueAsDate = new Date();</script>
+</div>
+
+<div class="card" id="questions">
+  <h2>Questionnaire</h2>
+  <p>⚠️ Ici tu remets tes 48 questions validées v5.5 (non modifiées). Chaque question reste identique.</p>
+  <label>Exemple : Je me fixe quotidiennement des objectifs 
+    <input type="range" min="1" max="7" step="1">
+  </label>
+</div>
+
+<div class="card" id="results">
+  <h2>Résultats</h2>
+  <p>Tableau des scores et graphique radar…</p>
+</div>
+
+<div class="card" id="profiles16">
+  <h2>Profils</h2>
+  <p>Résumé des 16 profils détaillés…</p>
+</div>
+
+<div class="card" id="details">
+  <h2>Détail par item</h2>
+  <p>Détail des réponses…</p>
+</div>
+
+<div class="card">
+  <button class="btn" onclick="computeScores()">Calculer les scores</button>
+  <button class="btn" id="exportPdf">Exporter PDF</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="script.js" charset="utf-8"></script>
+<script src="pdf-export.js" charset="utf-8"></script>
+</body>
+</html>
